@@ -1,26 +1,33 @@
-#include<Arduino.h>
-#include<ESP8266WiFi.h>
-#include<PubSubClient.h>
+#include <Arduino.h>
+#include <ESP8266WiFi.h>
+#include <PubSubClient.h>
+#include <DNSServer.h>
+#include <ESP8266WebServer.h>
+#include <ESP8266WiFiMulti.h>
+#include <ESP8266HTTPClient.h>
+#include <ESP8266httpUpdate.h>
+#include <Ticker.h>
 
 
 const char* ssid = "flatmates";
 const char* password = "mahalakshmi";
 const char* mqtt_server = "52.163.255.92";
+bool updateFirmware = 0;
 
-// void setup(){
-//   Serial.begin(9600);
-// }
-//
-// void loop(){
-//   delay(1000);
-//   Serial.println("Hello World");
-// }
+ESP8266WiFiMulti WiFiMulti;
+HTTPClient http;
+WiFiClient wclient;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 long lastMsg = 0;
 char msg[50];
 int value = 0;
+
+void setup_wifi();
+void callback(char* topic, byte* payload, unsigned int length);
+void reconnect();
+void program();
 
 void setup_wifi() {
 
@@ -59,8 +66,10 @@ void callback(char* topic, byte* payload, unsigned int length) {
     digitalWrite(BUILTIN_LED, LOW);   // Turn the LED on (Note that LOW is the voltage level
     // but actually the LED is on; this is because
     // it is acive low on the ESP-01)
+    updateFirmware = 1;
   } else {
     digitalWrite(BUILTIN_LED, HIGH);  // Turn the LED off by making the voltage HIGH
+    updateFirmware = 0;
   }
 
 }
@@ -99,19 +108,74 @@ void setup() {
 
 void loop() {
 
-  if (!client.connected()) {
-    reconnect();
-  }
-  client.loop();
+  // if (!client.connected()) {
+  //   reconnect();
+  // }
+  // client.loop();
+  //
+  // long now = millis();
+  // if (now - lastMsg > 2000) {
+  //   lastMsg = now;
+  //   ++value;
+  //   snprintf (msg, 75, "hello world #%ld", value);
+  //   Serial.print("Publish message: ");
+  //   Serial.println(msg);
+  //   client.publish("outTopic", msg);
+  //   client.subscribe("outTopic");
+  // }
 
-  long now = millis();
-  if (now - lastMsg > 2000) {
-    lastMsg = now;
-    ++value;
-    snprintf (msg, 75, "hello world #%ld", value);
-    Serial.print("Publish message: ");
-    Serial.println(msg);
-    client.publish("outTopic", msg);
-    client.subscribe("outTopic");
+  if ((WiFi.status() == WL_CONNECTED))
+  {
+    if (!client.connected())
+    {
+      Serial.println("Connecting to MQTT server");
+      reconnect();
+    }
+    else
+    {
+      client.loop();
+      client.subscribe("firmwareupdate");
+      if (updateFirmware) {
+        Serial.println("Updating firware");
+        digitalWrite(LED_BUILTIN, LOW);
+        t_httpUpdate_return ret = ESPhttpUpdate.update("https://s3.ap-south-1.amazonaws.com/iotci/Fimware/firmware.bin", "v1");
+        switch (ret) {
+          case HTTP_UPDATE_FAILED:
+            Serial.printf("HTTP_UPDATE_FAILD Error (%d): %s", ESPhttpUpdate.getLastError(), ESPhttpUpdate.getLastErrorString().c_str());
+            client.publish("firmwareupdate", "0");
+            break;
+
+          case HTTP_UPDATE_NO_UPDATES:
+            Serial.println("HTTP_UPDATE_NO_UPDATES");
+            break;
+
+          case HTTP_UPDATE_OK:
+            Serial.println("HTTP_UPDATE_OK");
+            client.publish("firmwareupdate", "2");
+            digitalWrite(LED_BUILTIN, HIGH);
+            delay(50);
+            updateFirmware = 0;
+            //ESP.restart();
+            break;
+        }
+      }
+      else
+      {
+        //Serial.println("No update found");
+      }
+
+      //Call the actual program
+      program();
+    }
   }
+  else
+  {
+    Serial.println("Unable to connect wifi");
+  }
+}
+
+void program(){
+
+  Serial.println("Hello World");
+
 }
