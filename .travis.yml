@@ -6,7 +6,7 @@ cache:
   directories:
   - "~/.platformio" 
 env: - PLATFORMIO_CI_SRC=src/ 
-install: 
+install:
 - pip install -U platformio 
 - platformio lib install 567 562 
 script: 
