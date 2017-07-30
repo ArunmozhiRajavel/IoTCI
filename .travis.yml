@@ -1,79 +1,21 @@
-# Continuous Integration (CI) is the practice, in software
-# engineering, of merging all developer working copies with a shared mainline
-# several times a day < http://docs.platformio.org/page/ci/index.html >
-#
-# Documentation:
-#
-# * Travis CI Embedded Builds with PlatformIO
-#   < https://docs.travis-ci.com/user/integration/platformio/ >
-#
-# * PlatformIO integration with Travis CI
-#   < http://docs.platformio.org/page/ci/travis.html >
-#
-# * User Guide for `platformio ci` command
-#   < http://docs.platformio.org/page/userguide/cmd_ci.html >
-#
-#
-# Please choice one of the following templates (proposed below) and uncomment
-# it (remove "# " before each line) or use own configuration according to the
-# Travis CI documentation (see above).
-#
-
-
-#
-# Template #1: General project. Test it using existing `platformio.ini`.
-#
-
 language: python
 python:
 - '2.7'
 sudo: false
 cache:
   directories:
-  - ~/.platformio
+  - "~/.platformio"
 env:
 - PLATFORMIO_CI_SRC=src/
-
 install:
 - pip install -U platformio
 - platformio lib install 567 562
 script:
 - platformio run -e nodemcuv2
-
 deploy:
+  provider: releases
+  api_key:
+    secure: ibW7/tKoWDIt3KJiP+q/iAhkDVwuT9grbek287Pwh50vAvIbIz5ztkcyV3HzF/j/UA/UXWpXC0yxzdG51CzxAUsza3DGCB+BqMmUYEHk31Htti012h/r4vKT1aS1Zo3B60RfYpDZDHtXfxmgCGtayqN4cZ9jmLlBwsT7+/dVs3weVRbOfQx3pdPoOiUKCJLd/yt68leMzlDemR1DiEFgtFmgUEHZwogrFWvGsUMMNda+evlCIkauQf1DlYZ29D51i1se58dFLpWRHsuubY/59j6DKKd9nBV9z6KWQE0bMEooc0K/mukowRqQ8X/vKPRz6XywtZYHOEfIsCOpHlpafcUNO1Epr5zJXDy0QedGdGTuMxg95bA/iImNjEikkr980pV5KFyLUXjFbRiSDPHUZYVvUPglsuT+GABraala1AVEEiF8T3LtaJbBSoN/UbouwI5h8kIzLJN12nDaOfauF3MZKvwSF7i4PFvAHE21rbG7WXP7KFPlfFQySI7NZoKFXVLA49L7fpVd0WTwt4WM/ucp7wyF09iIrufWCDF+ej+j4sudirW5PZRBGtMg8UjY8RzErk+RwvQVuG9DuvI4jW1er2n6XKTIfr8IfbP6fTgxKaTCsUMgHh5qFmC+mvV72SCR7bJ9uvZKLCWbxu3yuby5KvFY3shqdoun81jjWkk=
+  file: ".pioenvs/nodemcuv2/firmware.bin"
   on:
     repo: ArunmozhiRajavel/IoTCI
-   #condition: $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$
-  skip_cleanup: true
-  provider: releases
-  overwrite: true
-  #user: ArunmozhiRajavel
-  #password: Arun#moz3
-  api_key:
-    secure: DeLq8sczTsEAo3qi2ztSYgvaeidenvJherPCrceoknNuBs8SEsb8czGxBDPKt7lzK155Kcsfq/zo1VtUpVQ8HsalMQJABv9Li6t1uBc0m+mSLGggxw9woGzHv8FfnJdqeBD3YXgX8Qrmlnqp5QdIDZuyRfOxeF4NFwWZ89aOxMO8Kk363ykvQg5mq8mbqzHJOtCQCkHOEjklhcMTaHZgW/mlt7jBbuX/RM5jGTTAEOIKU/gmVvLo1LQMgsvJ2BCSLMrkEZmfxPncI1xTf26X7aSu01krn6oaROgJtFpTWEmSWHDHOJwngPC36SuaVtyd5WHE8u6+ZkDlfZsvDShq7Iap6vzqZwrTM3NvNyAnLWbE4YLLBDkuHMojyhy5MkvFLjVfEd4wkvy4JOnCL7IhJjcM4OWEXykZv80X/XBqT3XcZYYaorXs1x7rVUCsMYIxythVRaBzsP61NMFIEbLxV0maTYbuLMWX2HmForumMkk6SD7NdbaONZUaKRaG5G/QGWGHrOfVwBWCL/0KEZl6mKqkfadAQI4GWD77MOWn5JNmbM6bVE2hD/oVkSoao1XdY2N0flDEQQuVu3GHIweN3f5kudJ/bS04US1iyWw3t3PYtNOaQrUFtoUMd88/Q6hzzbdYuVVvjBH4Lsni4i/svMu//7URWXGgmcjm14Fr8xU=
-  file: ".pioenvs/nodemcuv2/firmware.bin"
-
-
-#
-# Template #2: The project is intended to by used as a library with examples
-#
-
-# language: python
-# python:
-#     - "2.7"
-#
-# sudo: false
-# cache:
-#     directories:
-#         - "~/.platformio"
-#
-# env:
-#     - PLATFORMIO_CI_SRC=path/to/test/file.c
-#     - PLATFORMIO_CI_SRC=examples/file.ino
-#     - PLATFORMIO_CI_SRC=path/to/test/directory
-#
-# install:
-#     - pip install -U platformio
-#
-# script:
-#     - platformio ci --lib="." --board=ID_1 --board=ID_2 --board=ID_N
