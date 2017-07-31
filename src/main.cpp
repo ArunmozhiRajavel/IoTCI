@@ -9,8 +9,8 @@
 #include <Ticker.h>
 
 
-const char* ssid = "flatmates";
-const char* password = "mahalakshmi";
+const char* ssid = "InfyIoT";
+const char* password = "20072117";
 const char* mqtt_server = "52.163.255.92";
 bool updateFirmware = 0;
 
