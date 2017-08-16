@@ -14,7 +14,7 @@ const char* password = "20072117";
 const char* mqtt_server = "52.163.255.92";
 bool updateFirmware = 0;
 
-ESP8266WiFiMulti WiFiMulti;//check
+ESP8266WiFiMulti WiFiMulti;
 HTTPClient http;
 WiFiClient wclient;
 
