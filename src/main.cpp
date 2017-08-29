@@ -72,7 +72,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     updateFirmware = 0;
   }
 
-}
+
 
 void reconnect() {
   // Loop until we're reconnected
